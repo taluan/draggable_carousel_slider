@@ -16,9 +16,11 @@ class DraggableSlider extends StatefulWidget {
     super.key,
     required this.children,
     this.onPressed,
-    this.loop = false,
+    this.loop = false, this.xOffset = 6, this.yOffset = 12
   });
 
+  final double xOffset;
+  final double yOffset;
   final List<Widget> children;
   final bool loop;
   final Function(int)? onPressed;
@@ -37,28 +39,32 @@ class _DraggableSliderState extends State<DraggableSlider> {
   Key? lastPopedItem;
   int selectedItem = 0;
 
-  final settings = {
+  late final settings = {
     DraggableSliderstatus.invisible: DraggableSliderItemSettings(
       angle: Vector3.zero(),
-      position: Offset.zero,
-      scale: 0,
-      visibility: 0,
+      position: Offset(widget.xOffset, widget.yOffset * 2),
+      scale: 1,
+      visibility: 1,
+      shadow: true,
     ),
     DraggableSliderstatus.start: DraggableSliderItemSettings(
-      angle: Vector3(0, 0, 0.3),
-      position: const Offset(64, 24),
-      scale: 0.8,
+      angle: Vector3.zero(),
+      position: Offset(widget.xOffset, widget.yOffset * 2),
+      scale: 1,
       visibility: 1,
+      shadow: true,
     ),
     DraggableSliderstatus.end: DraggableSliderItemSettings(
-      angle: Vector3(0, 0, -0.3),
-      position: const Offset(-64, 24),
-      scale: 0.8,
+      angle: Vector3.zero(),
+      position: Offset(0, widget.yOffset),
+      scale: 1,
       visibility: 1,
+      draggable: true,
+      shadow: true,
     ),
     DraggableSliderstatus.top: DraggableSliderItemSettings(
       angle: Vector3.zero(),
-      position: Offset.zero,
+      position: Offset(-widget.xOffset, 0),
       scale: 1,
       visibility: 1,
       draggable: true,
@@ -79,7 +85,7 @@ class _DraggableSliderState extends State<DraggableSlider> {
   ]) =>
       GestureDetector(
         key: ValueKey('$prefixKey$index-GestureDetector'),
-        onTap: () => onItemPressed(index),
+        onTap: () => onItemPressed(index % widget.children.length),
         child: DraggableSliderItem(
           key: ValueKey('$prefixKey$index-DraggableSliderItem'),
           onRelease: onTopItemRemoved,
@@ -92,7 +98,6 @@ class _DraggableSliderState extends State<DraggableSlider> {
 
   List<GestureDetector> _buildItems() {
     final result = <GestureDetector>[];
-
     var lastItem = selectedItem + MAX_ITEM_COUNT;
     if (!widget.loop) {
       lastItem = min(widget.children.length, lastItem);
@@ -150,7 +155,6 @@ class _DraggableSliderState extends State<DraggableSlider> {
 
       result.add(_buildItem(globalIndex, targetState!, initialState));
     }
-
     return result.reversed.toList();
   }
 
@@ -164,14 +168,17 @@ class _DraggableSliderState extends State<DraggableSlider> {
     }
   }
 
-  void onTopItemRemoved(Key? key, DragDirection direction) {
+  void onTopItemRemoved(Key? key, DragDirection direction,) {
     lastPopedItem = key;
     selectedItem += 1;
+
     children = _buildItems();
     setState(() {});
   }
 
   void onItemPressed(int index) {
+    debugPrint("onItemPressed: $index");
+
     if (widget.onPressed != null) {
       widget.onPressed!(index);
     }

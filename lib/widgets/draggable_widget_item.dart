@@ -44,7 +44,7 @@ class DraggableSliderItemState extends State<DraggableSliderItem>
   void initState() {
     super.initState();
 
-    const duration = Duration(seconds: 1);
+    const duration = Duration(milliseconds: 600);
     _animationController = AnimationController(vsync: this, duration: duration);
     _animationController.addStatusListener(onAnimationControllerStatusChanged);
 
@@ -101,6 +101,15 @@ class DraggableSliderItemState extends State<DraggableSliderItem>
   bool get draggable =>
       widget.settings.draggable && !_animationController.isAnimating;
 
+  bool isMatrixValid(Matrix4 m) {
+    final r2 = m.getRow(2);
+    final c2 = m.getColumn(2);
+
+    return m.storage.every((v) => v.isFinite) &&
+        r2.x == 0 && r2.y == 0 && r2.z == 1 && r2.w == 0 &&
+        c2.x == 0 && c2.y == 0 && c2.z == 1 && c2.w == 0;
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -118,29 +127,37 @@ class DraggableSliderItemState extends State<DraggableSliderItem>
         child: AnimatedBuilder(
           animation: _tranformTween,
           child: widget.child,
-          builder: (context, child) => Transform(
-            transform: _tranformTween.value,
-            alignment: FractionalOffset.center,
-            child: AnimatedContainer(
-              key: key,
-              duration: const Duration(seconds: 1),
-              decoration: BoxDecoration(
-                boxShadow: widget.settings.shadow
-                    ? [
-                        const BoxShadow(
-                          color: Colors.black54,
-                          offset: Offset(0, 32),
-                          blurRadius: 32,
-                        )
-                      ]
-                    : null,
+          builder: (context, child) {
+            if (child == null) return const SizedBox();
+            final matrix = _tranformTween.value;
+            // 🔒 Chặn NaN từ gốc
+            if (!isMatrixValid(matrix)) {
+              return child; // hoặc SizedBox()
+            }
+            return Transform(
+              transform: matrix,
+              alignment: FractionalOffset.center,
+              child: AnimatedContainer(
+                key: key,
+                duration: const Duration(milliseconds: 600),
+                decoration: BoxDecoration(
+                  boxShadow: widget.settings.shadow
+                      ? [
+                    const BoxShadow(
+                      color: Colors.black12,
+                      offset: Offset(0, 2),
+                      blurRadius: 12,
+                    )
+                  ]
+                      : null,
+                ),
+                child: MeasureSize(
+                  onChange: onChildSizeChanged,
+                  child: child,
+                ),
               ),
-              child: MeasureSize(
-                onChange: onChildSizeChanged,
-                child: child!,
-              ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );
@@ -150,7 +167,12 @@ class DraggableSliderItemState extends State<DraggableSliderItem>
     if (!draggable) return;
     _itemGlobalPosition = null;
 
-    final slope = (_itemPosition.dx / _itemPosition.dy).abs();
+    var dy = _itemPosition.dy;
+    if (dy == 0) {
+      dy = 0.0001;
+    }
+
+    final slope = (_itemPosition.dx / dy).abs();
     var targetPosition = Offset(
       _itemPosition.dx.sign * _screenSize.width * slope,
       _itemPosition.dy.sign * _screenSize.height * slope,
@@ -206,11 +228,16 @@ class DraggableSliderItemState extends State<DraggableSliderItem>
     setState(() {});
   }
 
+  double safe(double v, {double fallback = 0}) {
+    if (v.isNaN || v.isInfinite) return fallback;
+    return v;
+  }
+
   Matrix4 _computeTransformMatrix(DraggableSliderItemSettings settings) {
     final matrix = Matrix4.identity();
 
     if (settings.scale != null) {
-      matrix.scale(settings.scale!);
+      matrix.scale(safe(settings.scale!, fallback: 1.0));
     }
 
     if (settings.angle != null) {

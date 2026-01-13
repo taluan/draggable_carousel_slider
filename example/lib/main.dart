@@ -75,12 +75,67 @@ class _MyAppPageState extends State<MyApp> {
               child: DraggableSlider(
                 loop: true,
                 children: [
-                  _image('https://picsum.photos/id/230/600/600', 300, 300),
-                  _image(
-                      'https://picsum.photos/id/431/600/600', 300, 300, true),
-                  _image('https://picsum.photos/id/232/600/600', 300, 300),
-                  _image('https://picsum.photos/id/433/600/600', 300, 300),
-                  _image('https://picsum.photos/id/234/600/600', 300, 300),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: Colors.grey.shade400,
+                    ),
+                    width: 300,
+                    height: 300,
+                    child: const Center(child: Text("1"),)
+                  ),
+                  Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.grey.shade400,
+                      ),
+                      width: 300,
+                      height: 300,
+                      child: const Center(child: Text("2"),)
+                  ),
+                  Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.grey.shade400,
+                      ),
+                      width: 300,
+                      height: 300,
+                      child: const Center(child: Text("3"),)
+                  ),
+
+                  Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.grey.shade400,
+                      ),
+                      width: 300,
+                      height: 300,
+                      child: const Center(child: Text("4"),)
+                  ),
+                  Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.grey.shade400,
+                      ),
+                      width: 300,
+                      height: 300,
+                      child: const Center(child: Text("5"),)
+                  ),
+                  Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.grey.shade400,
+                      ),
+                      width: 300,
+                      height: 300,
+                      child: const Center(child: Text("6"),)
+                  ),
+                  // _image('https://picsum.photos/id/230/600/600', 300, 300),
+                  // _image(
+                  //     'https://picsum.photos/id/431/600/600', 300, 300, true),
+                  // _image('https://picsum.photos/id/232/600/600', 300, 300),
+                  // _image('https://picsum.photos/id/433/600/600', 300, 300),
+                  // _image('https://picsum.photos/id/234/600/600', 300, 300),
                 ],
               ),
             ),

@@ -7,14 +7,13 @@ issue_tracker: https://github.com/MohammadJamali/draggable_carousel_slider/issue
 contributors: MohammadJamali
 
 environment:
-  sdk: '>=3.3.2 <4.0.0'
-  flutter: ">=1.17.0"
+  sdk: ^3.9.2
 
 dependencies:
   flutter:
     sdk: flutter
 
-  flutter_lints: ^4.0.0
+#  flutter_lints: ^4.0.0
   vector_math: ^2.1.4
 
 dev_dependencies:
